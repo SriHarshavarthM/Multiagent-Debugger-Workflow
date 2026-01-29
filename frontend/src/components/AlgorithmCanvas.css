@@ -58,6 +58,54 @@
     .control-btn {
         padding: 0.4rem 0.75rem;
     }
+
+    .visualization-area {
+        padding: 1rem;
+        min-height: 250px;
+    }
+
+    .efficiency-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .control-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .algorithm-canvas {
+        padding: 1rem;
+    }
+
+    .canvas-title {
+        font-size: 1rem;
+    }
+
+    .efficiency-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .array-bars {
+        gap: 0.25rem;
+    }
+
+    .speed-control {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .metric-card {
+        padding: 0.75rem;
+    }
+
+    .metric-icon {
+        font-size: 1.25rem;
+    }
+
+    .metric-value {
+        font-size: 1rem;
+    }
 }
 
 /* Sorting Visualization */

@@ -26,12 +26,17 @@ class AlgorithmVisualizerAgent(BaseAgent):
     def analyze(self, code: str, language: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Detect algorithms and generate visualization data."""
         
-        if language != 'python':
+        supported_languages = ['python', 'javascript', 'java', 'cpp', 'c']
+        
+        if language not in supported_languages:
             return {
                 "agent": self.name,
-                "status": "skipped",
+                "status": "partial",
                 "findings": [],
-                "metadata": {"message": "Algorithm visualization currently supports Python only"}
+                "visualizations": [],
+                "metadata": {
+                    "message": f"Algorithm visualization has limited support for {language}. Full support: {', '.join(supported_languages)}"
+                }
             }
         
         # Detect algorithms
@@ -42,6 +47,8 @@ class AlgorithmVisualizerAgent(BaseAgent):
         for algo in detected_algorithms:
             viz_data = self._generate_visualization_data(code, algo, language)
             if viz_data:
+                # Add memory efficiency metrics
+                viz_data['memory_analysis'] = self._analyze_memory_efficiency(algo, code)
                 visualizations.append(viz_data)
         
         return {
@@ -51,7 +58,9 @@ class AlgorithmVisualizerAgent(BaseAgent):
             "visualizations": visualizations,
             "metadata": {
                 "algorithms_detected": len(detected_algorithms),
-                "visualizations_generated": len(visualizations)
+                "visualizations_generated": len(visualizations),
+                "language": language,
+                "supported_languages": supported_languages
             }
         }
     
@@ -310,3 +319,133 @@ class AlgorithmVisualizerAgent(BaseAgent):
             'sample_data': [10, 20, 30, 40, 50],
             'message': 'Array structure detected'
         }
+    
+    def _analyze_memory_efficiency(self, algo: Dict, code: str) -> Dict[str, Any]:
+        """Analyze memory efficiency of the detected algorithm/data structure."""
+        
+        algo_name = algo.get('algorithm', algo.get('data_structure', 'unknown'))
+        category = algo.get('category', '')
+        
+        # Memory characteristics by algorithm/structure type
+        memory_profiles = {
+            'bubble_sort': {
+                'space_complexity': 'O(1)',
+                'in_place': True,
+                'auxiliary_space': '~8 bytes (swap variable)',
+                'memory_efficient': True,
+                'cache_friendly': True,
+                'recommendation': 'Memory efficient but slow. Consider for small datasets.'
+            },
+            'merge_sort': {
+                'space_complexity': 'O(n)',
+                'in_place': False,
+                'auxiliary_space': 'n * element_size bytes',
+                'memory_efficient': False,
+                'cache_friendly': False,
+                'recommendation': 'Uses extra memory for merging. Use in-place merge sort for memory-constrained environments.'
+            },
+            'quick_sort': {
+                'space_complexity': 'O(log n)',
+                'in_place': True,
+                'auxiliary_space': 'Stack frames for recursion',
+                'memory_efficient': True,
+                'cache_friendly': True,
+                'recommendation': 'Good balance of speed and memory. Preferred for large datasets.'
+            },
+            'binary_search': {
+                'space_complexity': 'O(1)',
+                'in_place': True,
+                'auxiliary_space': '~24 bytes (left, right, mid)',
+                'memory_efficient': True,
+                'cache_friendly': True,
+                'recommendation': 'Extremely memory efficient. Ideal for sorted data lookup.'
+            },
+            'bfs': {
+                'space_complexity': 'O(V)',
+                'in_place': False,
+                'auxiliary_space': 'Queue + Visited set',
+                'memory_efficient': False,
+                'cache_friendly': False,
+                'recommendation': 'Memory scales with graph width. Use DFS for deep narrow graphs.'
+            },
+            'dfs': {
+                'space_complexity': 'O(V)',
+                'in_place': False,
+                'auxiliary_space': 'Stack (recursion/explicit)',
+                'memory_efficient': True,
+                'cache_friendly': True,
+                'recommendation': 'Better memory for deep graphs. Watch for stack overflow on deep recursion.'
+            },
+            'array': {
+                'space_complexity': 'O(n)',
+                'in_place': True,
+                'auxiliary_space': 'Contiguous block',
+                'memory_efficient': True,
+                'cache_friendly': True,
+                'recommendation': 'Most cache-friendly. Pre-allocate size if known.'
+            },
+            'tree': {
+                'space_complexity': 'O(n)',
+                'in_place': False,
+                'auxiliary_space': 'Pointer overhead per node',
+                'memory_efficient': False,
+                'cache_friendly': False,
+                'recommendation': 'Each node has ~16 bytes pointer overhead. Consider array-based trees for performance.'
+            },
+            'graph': {
+                'space_complexity': 'O(V + E)',
+                'in_place': False,
+                'auxiliary_space': 'Adjacency list/matrix',
+                'memory_efficient': False,
+                'cache_friendly': False,
+                'recommendation': 'Adjacency list saves memory for sparse graphs. Matrix better for dense graphs.'
+            },
+            'stack_queue': {
+                'space_complexity': 'O(n)',
+                'in_place': False,
+                'auxiliary_space': 'Dynamic allocation',
+                'memory_efficient': True,
+                'cache_friendly': True,
+                'recommendation': 'Use array-based implementation for better cache performance.'
+            }
+        }
+        
+        profile = memory_profiles.get(algo_name, {
+            'space_complexity': 'Unknown',
+            'in_place': None,
+            'auxiliary_space': 'Unknown',
+            'memory_efficient': None,
+            'cache_friendly': None,
+            'recommendation': 'Analyze manually for memory characteristics.'
+        })
+        
+        # Estimate memory usage based on code patterns
+        estimated_bytes = self._estimate_memory_usage(code, algo_name)
+        
+        return {
+            **profile,
+            'estimated_memory_bytes': estimated_bytes,
+            'algorithm': algo_name
+        }
+    
+    def _estimate_memory_usage(self, code: str, algo_name: str) -> int:
+        """Estimate memory usage in bytes based on code patterns."""
+        
+        # Count array literals to estimate data size
+        array_matches = re.findall(r'\[([^\]]+)\]', code)
+        total_elements = 0
+        for match in array_matches:
+            elements = match.split(',')
+            total_elements += len(elements)
+        
+        # Base estimation: 8 bytes per number (Python float), 50 bytes per string
+        estimated = total_elements * 8
+        
+        # Add overhead based on data structure type
+        if algo_name in ['tree', 'graph']:
+            estimated += total_elements * 16  # Pointer overhead
+        elif algo_name in ['bfs', 'dfs']:
+            estimated += total_elements * 8  # Queue/stack overhead
+        
+        return max(estimated, 64)  # Minimum 64 bytes for any structure
+
