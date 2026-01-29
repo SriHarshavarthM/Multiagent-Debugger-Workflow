@@ -37,7 +37,12 @@ Advanced code analysis platform with intelligent multiagent workflow for debuggi
 - Node.js 16+
 - npm or yarn
 
-### Backend Setup
+### One-Click Start (Windows)
+1. Double-click the `run_locally.bat` file.
+2. The script will verify dependencies and launch both servers automatically.
+
+### Manual Setup
+40: ### Backend Setup
 
 ```bash
 # Navigate to backend directory
