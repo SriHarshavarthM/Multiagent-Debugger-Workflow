@@ -33,3 +33,10 @@
     font-size: 0.75rem;
     font-weight: 600;
 }
+
+@media (max-width: 1024px) {
+    .code-editor-container {
+        height: 60vh;
+        min-height: 400px;
+    }
+}

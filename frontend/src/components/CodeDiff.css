@@ -87,3 +87,15 @@
 .diff-content-wrapper::-webkit-scrollbar-track {
     background: var(--bg-dark);
 }
+
+@media (max-width: 768px) {
+    .code-diff-container {
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .diff-header {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}

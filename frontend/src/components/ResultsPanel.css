@@ -77,24 +77,28 @@
     font-weight: 700;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .severity-error .card-value {
     background: linear-gradient(135deg, var(--accent-error), #dc2626);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .severity-warning .card-value {
     background: linear-gradient(135deg, var(--accent-warning), #ea580c);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .severity-success .card-value {
     background: linear-gradient(135deg, var(--accent-success), #059669);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -265,4 +269,28 @@
     color: var(--text-secondary);
     font-size: 0.875rem;
     padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .results-panel.error {
+        padding: 1rem;
+    }
+
+    .summary-card {
+        padding: 1rem;
+    }
+
+    .card-value {
+        font-size: 2rem;
+    }
+
+    .agent-findings {
+        padding: 1rem;
+    }
+
+    .finding-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
 }
