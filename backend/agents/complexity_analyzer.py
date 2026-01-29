@@ -19,12 +19,12 @@ class ComplexityAnalyzerAgent(BaseAgent):
         
         if language == 'python':
             findings.extend(self._analyze_python_complexity(code))
+        elif language in ['cpp', 'c', 'java']:
+            findings.extend(self._analyze_c_family_complexity(code, language))
+        elif language in ['javascript', 'typescript']:
+            findings.extend(self._analyze_js_complexity(code, language))
         else:
-            findings.append({
-                'type': 'info',
-                'message': f'Complexity analysis for {language} coming soon',
-                'severity': 'info'
-            })
+            findings.extend(self._analyze_generic_complexity(code, language))
         
         return {
             "agent": self.name,
@@ -208,3 +208,176 @@ class ComplexityAnalyzerAgent(BaseAgent):
                 metadata['maintainability_index'] = f.get('score', 0)
         
         return metadata
+    
+    def _analyze_c_family_complexity(self, code: str, language: str) -> List[Dict[str, Any]]:
+        """Analyze C/C++/Java code complexity using pattern matching."""
+        import re
+        findings = []
+        
+        # Count functions/methods
+        if language in ['cpp', 'c']:
+            func_pattern = r'\b(?:void|int|float|double|char|bool|string|auto)\s+(\w+)\s*\([^)]*\)\s*{'
+        else:  # java
+            func_pattern = r'\b(?:public|private|protected)?\s*(?:static)?\s*(?:void|int|float|double|char|boolean|String|\w+)\s+(\w+)\s*\([^)]*\)\s*{'
+        
+        functions = re.findall(func_pattern, code)
+        
+        # Count loops for cyclomatic complexity
+        for_loops = len(re.findall(r'\bfor\s*\(', code))
+        while_loops = len(re.findall(r'\bwhile\s*\(', code))
+        if_statements = len(re.findall(r'\bif\s*\(', code))
+        switch_cases = len(re.findall(r'\bcase\s+', code))
+        
+        # Estimate cyclomatic complexity
+        base_complexity = 1 + for_loops + while_loops + if_statements + switch_cases
+        
+        findings.append({
+            'category': 'cyclomatic_complexity',
+            'name': 'Overall',
+            'complexity': base_complexity,
+            'line': 1,
+            'severity': 'info' if base_complexity <= 10 else 'warning' if base_complexity <= 20 else 'error',
+            'message': f'Estimated cyclomatic complexity: {base_complexity}',
+            'suggestion': 'Consider refactoring if complexity exceeds 20' if base_complexity > 20 else None
+        })
+        
+        # Analyze nested loops
+        nested_depth = self._count_c_loop_depth(code)
+        time_complexity = self._estimate_c_time_complexity(nested_depth)
+        
+        findings.append({
+            'category': 'time_complexity',
+            'function': 'main',
+            'big_o': time_complexity['notation'],
+            'line': 1,
+            'severity': time_complexity['severity'],
+            'message': f'Estimated time complexity: {time_complexity["notation"]}',
+            'explanation': time_complexity['explanation']
+        })
+        
+        # Memory usage patterns
+        pointer_count = len(re.findall(r'\*\s*\w+', code))
+        new_allocations = len(re.findall(r'\bnew\s+', code))
+        malloc_calls = len(re.findall(r'\bmalloc\s*\(', code))
+        
+        if new_allocations > 0 or malloc_calls > 0:
+            findings.append({
+                'category': 'memory',
+                'severity': 'info',
+                'message': f'Dynamic allocations: {new_allocations + malloc_calls} (new: {new_allocations}, malloc: {malloc_calls})',
+                'suggestion': 'Ensure proper deallocation to prevent memory leaks'
+            })
+        
+        # Function count
+        findings.append({
+            'category': 'structure',
+            'severity': 'info',
+            'message': f'Functions detected: {len(functions)}',
+            'functions': functions[:10]  # Limit to first 10
+        })
+        
+        return findings
+    
+    def _analyze_js_complexity(self, code: str, language: str) -> List[Dict[str, Any]]:
+        """Analyze JavaScript/TypeScript complexity."""
+        import re
+        findings = []
+        
+        # Count functions
+        arrow_funcs = len(re.findall(r'=>', code))
+        func_declarations = len(re.findall(r'\bfunction\s+\w+', code))
+        
+        # Loops and conditions
+        for_loops = len(re.findall(r'\bfor\s*\(', code))
+        while_loops = len(re.findall(r'\bwhile\s*\(', code))
+        if_statements = len(re.findall(r'\bif\s*\(', code))
+        
+        complexity = 1 + for_loops + while_loops + if_statements
+        
+        findings.append({
+            'category': 'cyclomatic_complexity',
+            'name': 'Overall',
+            'complexity': complexity,
+            'line': 1,
+            'severity': 'info' if complexity <= 10 else 'warning',
+            'message': f'Cyclomatic complexity: {complexity}'
+        })
+        
+        nested_depth = self._count_c_loop_depth(code)
+        time_complexity = self._estimate_c_time_complexity(nested_depth)
+        
+        findings.append({
+            'category': 'time_complexity',
+            'function': 'module',
+            'big_o': time_complexity['notation'],
+            'line': 1,
+            'severity': time_complexity['severity'],
+            'message': f'Estimated time complexity: {time_complexity["notation"]}',
+            'explanation': time_complexity['explanation']
+        })
+        
+        findings.append({
+            'category': 'structure',
+            'severity': 'info',
+            'message': f'Functions: {func_declarations} declared, {arrow_funcs} arrow functions'
+        })
+        
+        return findings
+    
+    def _analyze_generic_complexity(self, code: str, language: str) -> List[Dict[str, Any]]:
+        """Generic complexity analysis for unsupported languages."""
+        import re
+        findings = []
+        
+        lines = code.count('\n') + 1
+        
+        # Basic loop detection
+        for_loops = len(re.findall(r'\bfor\b', code))
+        while_loops = len(re.findall(r'\bwhile\b', code))
+        if_statements = len(re.findall(r'\bif\b', code))
+        
+        complexity = 1 + for_loops + while_loops + if_statements
+        
+        findings.append({
+            'category': 'cyclomatic_complexity',
+            'name': 'Estimated',
+            'complexity': complexity,
+            'line': 1,
+            'severity': 'info',
+            'message': f'Estimated complexity for {language}: {complexity}'
+        })
+        
+        findings.append({
+            'category': 'structure',
+            'severity': 'info',
+            'message': f'Lines of code: {lines}, Loops: {for_loops + while_loops}, Conditions: {if_statements}'
+        })
+        
+        return findings
+    
+    def _count_c_loop_depth(self, code: str) -> int:
+        """Count maximum nested loop depth in C-style code."""
+        max_depth = 0
+        current_depth = 0
+        
+        for char in code:
+            if char == '{':
+                current_depth += 1
+                max_depth = max(max_depth, current_depth)
+            elif char == '}':
+                current_depth = max(0, current_depth - 1)
+        
+        # Estimate loop depth (simplified)
+        return min(max_depth, 5)  # Cap at 5
+    
+    def _estimate_c_time_complexity(self, depth: int) -> Dict[str, Any]:
+        """Estimate time complexity from loop depth."""
+        if depth <= 1:
+            return {'notation': 'O(n)', 'severity': 'info', 'explanation': 'Linear time - single loop level'}
+        elif depth == 2:
+            return {'notation': 'O(n²)', 'severity': 'warning', 'explanation': 'Quadratic time - nested loops'}
+        elif depth == 3:
+            return {'notation': 'O(n³)', 'severity': 'error', 'explanation': 'Cubic time - deeply nested loops'}
+        else:
+            return {'notation': f'O(n^{depth})', 'severity': 'error', 'explanation': f'Polynomial time with depth {depth}'}
+

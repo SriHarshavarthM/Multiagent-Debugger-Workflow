@@ -9,6 +9,7 @@ const AlgorithmCanvas = ({ visualization }) => {
     const frames = visualization?.frames || [];
     const metrics = visualization?.metrics || {};
     const type = visualization?.type || '';
+    const memoryAnalysis = visualization?.memory_analysis || {};
 
     useEffect(() => {
         if (isPlaying && frames.length > 0) {
@@ -50,7 +51,8 @@ const AlgorithmCanvas = ({ visualization }) => {
         setIsPlaying(false);
     };
 
-    if (!visualization || !frames.length) {
+    // Handle data structures without animation frames (tree, array, graph)
+    if (!visualization) {
         return (
             <div className="algorithm-canvas">
                 <p className="no-viz">No visualization data available</p>
@@ -58,7 +60,9 @@ const AlgorithmCanvas = ({ visualization }) => {
         );
     }
 
-    const frame = frames[currentFrame];
+    // For data structures without frames, show static visualization
+    const hasFrames = frames && frames.length > 0;
+    const frame = hasFrames ? frames[currentFrame] : null;
 
     const renderSortingVisualization = () => {
         const arr = frame.array || [];
@@ -133,6 +137,91 @@ const AlgorithmCanvas = ({ visualization }) => {
         );
     };
 
+    const renderTreeVisualization = () => {
+        const treeData = visualization.sample_data || {};
+        const nodes = treeData.nodes || [];
+
+        return (
+            <div className="tree-viz">
+                <div className="tree-container">
+                    <div className="tree-root">
+                        <div className="tree-node root-node">
+                            <span className="node-value">{treeData.root || 'Root'}</span>
+                        </div>
+                        <div className="tree-children">
+                            {nodes.slice(1, 3).map((node, idx) => (
+                                <div key={idx} className="tree-branch">
+                                    <div className="tree-node">
+                                        <span className="node-value">{node.value}</span>
+                                    </div>
+                                    <div className="tree-sub-children">
+                                        {node.left && (
+                                            <div className="tree-node leaf">
+                                                <span className="node-value">{node.left}</span>
+                                            </div>
+                                        )}
+                                        {node.right && (
+                                            <div className="tree-node leaf">
+                                                <span className="node-value">{node.right}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <p className="operation-message">{visualization.message || 'Tree structure detected'}</p>
+            </div>
+        );
+    };
+
+    const renderArrayVisualization = () => {
+        const arr = visualization.sample_data || [];
+
+        return (
+            <div className="array-viz">
+                <div className="array-display">
+                    {arr.map((value, idx) => (
+                        <div key={idx} className="array-cell">
+                            <span className="cell-value">{value}</span>
+                            <span className="cell-index">[{idx}]</span>
+                        </div>
+                    ))}
+                </div>
+                <p className="operation-message">{visualization.message || 'Array structure detected'}</p>
+            </div>
+        );
+    };
+
+    const renderMemoryAnalysis = () => {
+        if (!memoryAnalysis || !memoryAnalysis.space_complexity) return null;
+
+        return (
+            <div className="memory-analysis">
+                <h5 className="memory-title">💾 Memory Analysis</h5>
+                <div className="memory-grid">
+                    <div className="memory-item">
+                        <span className="memory-label">Space Complexity</span>
+                        <span className="memory-value">{memoryAnalysis.space_complexity}</span>
+                    </div>
+                    <div className="memory-item">
+                        <span className="memory-label">In-Place</span>
+                        <span className="memory-value">{memoryAnalysis.in_place ? '✅ Yes' : '❌ No'}</span>
+                    </div>
+                    <div className="memory-item">
+                        <span className="memory-label">Cache Friendly</span>
+                        <span className="memory-value">{memoryAnalysis.cache_friendly ? '✅ Yes' : '❌ No'}</span>
+                    </div>
+                    <div className="memory-item full-width">
+                        <span className="memory-label">Recommendation</span>
+                        <span className="memory-value recommendation">{memoryAnalysis.recommendation}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="algorithm-canvas">
             <div className="canvas-header">
@@ -143,10 +232,19 @@ const AlgorithmCanvas = ({ visualization }) => {
             </div>
 
             <div className="visualization-area">
-                {type === 'sorting' && renderSortingVisualization()}
-                {type === 'searching' && renderSearchingVisualization()}
-                {type === 'graph' && renderGraphVisualization()}
+                {type === 'sorting' && hasFrames && renderSortingVisualization()}
+                {type === 'searching' && hasFrames && renderSearchingVisualization()}
+                {type === 'graph' && hasFrames && renderGraphVisualization()}
+                {type === 'tree' && renderTreeVisualization()}
+                {type === 'array' && renderArrayVisualization()}
+                {!hasFrames && type !== 'tree' && type !== 'array' && (
+                    <div className="static-viz-message">
+                        <p className="operation-message">{visualization.message || 'Data structure detected'}</p>
+                    </div>
+                )}
             </div>
+
+            {renderMemoryAnalysis()}
 
             {/* Efficiency Metrics */}
             <div className="efficiency-metrics">

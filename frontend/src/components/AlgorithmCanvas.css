@@ -449,3 +449,230 @@
     border: none;
     box-shadow: 0 0 10px var(--glow);
 }
+
+/* Tree Visualization */
+.tree-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.tree-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tree-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tree-node {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin: 0.5rem;
+    box-shadow: 0 4px 15px var(--glow);
+    transition: transform 0.3s;
+}
+
+.tree-node:hover {
+    transform: scale(1.1);
+}
+
+.tree-node.root-node {
+    width: 60px;
+    height: 60px;
+    font-size: 1.25rem;
+}
+
+.tree-node.leaf {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+    opacity: 0.85;
+}
+
+.tree-children {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    position: relative;
+}
+
+.tree-children::before {
+    content: '';
+    position: absolute;
+    top: -1rem;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background: var(--accent-primary);
+}
+
+.tree-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+    position: relative;
+}
+
+.tree-branch::before {
+    content: '';
+    position: absolute;
+    top: -1rem;
+    width: 2px;
+    height: 1rem;
+    background: var(--accent-primary);
+}
+
+.tree-sub-children {
+    display: flex;
+    margin-top: 0.5rem;
+}
+
+.node-value {
+    font-size: 0.875rem;
+}
+
+/* Array Visualization */
+.array-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.array-display {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.array-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.array-cell .cell-value {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.125rem;
+    box-shadow: 0 4px 15px var(--glow);
+}
+
+.array-cell .cell-index {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Memory Analysis */
+.memory-analysis {
+    background: var(--bg-card);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.memory-title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.memory-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.memory-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.memory-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.memory-value {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.memory-value.recommendation {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--accent-primary);
+}
+
+.static-viz-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+}
+
+@media (max-width: 768px) {
+    .memory-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .tree-node {
+        width: 40px;
+        height: 40px;
+    }
+
+    .tree-node.root-node {
+        width: 50px;
+        height: 50px;
+    }
+
+    .array-cell .cell-value {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .memory-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tree-children {
+        flex-direction: column;
+    }
+
+    .tree-branch {
+        margin: 0.5rem 0;
+    }
+}
