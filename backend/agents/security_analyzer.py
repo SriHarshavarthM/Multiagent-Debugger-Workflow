@@ -20,7 +20,9 @@ class SecurityAnalyzerAgent(BaseAgent):
         ],
         'command_injection': [
             r'os\.system\s*\(',
-            r'subprocess\.(call|run|Popen).*shell\s*=\s*True'
+            r'subprocess\.(call|run|Popen).*shell\s*=\s*True',
+            r'system\s*\(\s*["\']',  # C/C++ system()
+            r'popen\s*\('  # C/C++ popen()
         ],
         'hardcoded_secrets': [
             r'password\s*=\s*["\'].*["\']',
@@ -34,7 +36,24 @@ class SecurityAnalyzerAgent(BaseAgent):
         ],
         'insecure_random': [
             r'random\.random\(\)',
-            r'Math\.random\(\)'
+            r'Math\.random\(\)',
+            r'\brand\s*\(\s*\)',  # C/C++ rand()
+            r'\bsrand\s*\('
+        ],
+        'buffer_overflow': [
+            r'strcpy\s*\(',
+            r'strcat\s*\(',
+            r'sprintf\s*\(',
+            r'gets\s*\(',
+            r'scanf\s*\([^,]*%s'
+        ],
+        'format_string': [
+            r'printf\s*\(\s*\w+\s*\)',  # printf(variable) without format
+            r'sprintf\s*\([^,]+,\s*\w+\s*\)'
+        ],
+        'null_pointer': [
+            r'\*\s*NULL',
+            r'\*\s*nullptr'
         ]
     }
     
@@ -75,8 +94,11 @@ class SecurityAnalyzerAgent(BaseAgent):
         severity_map = {
             'sql_injection': 'critical',
             'command_injection': 'critical',
+            'buffer_overflow': 'critical',
+            'format_string': 'high',
             'xss': 'high',
             'hardcoded_secrets': 'high',
+            'null_pointer': 'high',
             'insecure_random': 'medium'
         }
         return severity_map.get(vuln_type, 'low')
@@ -86,8 +108,11 @@ class SecurityAnalyzerAgent(BaseAgent):
         messages = {
             'sql_injection': 'Potential SQL injection vulnerability detected',
             'command_injection': 'Command injection vulnerability detected',
+            'buffer_overflow': 'Buffer overflow vulnerability - unsafe function detected',
+            'format_string': 'Format string vulnerability detected',
             'xss': 'Potential XSS vulnerability detected',
             'hardcoded_secrets': 'Hardcoded credential detected',
+            'null_pointer': 'Null pointer dereference risk',
             'insecure_random': 'Insecure random number generation'
         }
         return messages.get(vuln_type, 'Security issue detected')
@@ -97,8 +122,12 @@ class SecurityAnalyzerAgent(BaseAgent):
         recommendations = {
             'sql_injection': 'Use parameterized queries or ORM instead of string formatting',
             'command_injection': 'Avoid shell=True, use subprocess with list arguments',
+            'buffer_overflow': 'Use strncpy, strncat, snprintf instead of unsafe versions',
+            'format_string': 'Always use format specifier: printf("%s", str) not printf(str)',
             'xss': 'Sanitize user input and use textContent instead of innerHTML',
             'hardcoded_secrets': 'Use environment variables or secret management systems',
-            'insecure_random': 'Use secrets module for cryptographic operations'
+            'null_pointer': 'Check for NULL/nullptr before dereferencing pointers',
+            'insecure_random': 'Use cryptographic RNG: secrets module (Python), std::random_device (C++)'
         }
         return recommendations.get(vuln_type, 'Review and fix security issue')
+

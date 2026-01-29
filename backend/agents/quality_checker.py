@@ -20,6 +20,12 @@ class QualityCheckerAgent(BaseAgent):
             findings.extend(self._check_python_quality(code))
         elif language in ['javascript', 'typescript']:
             findings.extend(self._check_javascript_quality(code))
+        elif language in ['cpp', 'c']:
+            findings.extend(self._check_cpp_quality(code))
+        elif language == 'java':
+            findings.extend(self._check_java_quality(code))
+        else:
+            findings.extend(self._check_generic_quality(code, language))
         
         quality_score = self._calculate_quality_score(findings)
         
@@ -179,3 +185,185 @@ class QualityCheckerAgent(BaseAgent):
                 base_score -= 2
         
         return max(0, min(100, base_score))
+    
+    def _check_cpp_quality(self, code: str) -> List[Dict[str, Any]]:
+        """Check C/C++ code quality."""
+        findings = []
+        lines = code.split('\n')
+        
+        # Check for using namespace std
+        if 'using namespace std;' in code:
+            findings.append({
+                'category': 'best_practice',
+                'severity': 'info',
+                'message': 'Avoid "using namespace std;" in headers',
+                'suggestion': 'Use std:: prefix or targeted using declarations'
+            })
+        
+        # Check for raw pointers
+        raw_ptr_count = len(re.findall(r'\*\s*\w+\s*=\s*new', code))
+        if raw_ptr_count > 0:
+            findings.append({
+                'category': 'best_practice',
+                'severity': 'warning',
+                'message': f'{raw_ptr_count} raw pointer allocation(s) detected',
+                'suggestion': 'Consider using smart pointers (std::unique_ptr, std::shared_ptr)'
+            })
+        
+        # Check function length
+        func_pattern = re.compile(r'(void|int|float|double|bool|auto|string)\s+\w+\s*\([^)]*\)\s*\{')
+        func_starts = [(m.start(), m.group()) for m in func_pattern.finditer(code)]
+        
+        for start, func in func_starts:
+            # Rough estimate of function length
+            brace_count = 1
+            pos = start + len(func)
+            while pos < len(code) and brace_count > 0:
+                if code[pos] == '{':
+                    brace_count += 1
+                elif code[pos] == '}':
+                    brace_count -= 1
+                pos += 1
+            
+            func_length = code[start:pos].count('\n')
+            if func_length > 50:
+                findings.append({
+                    'category': 'code_smell',
+                    'severity': 'warning',
+                    'message': f'Long function detected (~{func_length} lines)',
+                    'suggestion': 'Break down into smaller functions'
+                })
+        
+        # Check for magic numbers
+        magic_numbers = re.findall(r'[^0-9][0-9]{2,}[^0-9\.\w]', code)
+        if len(magic_numbers) > 3:
+            findings.append({
+                'category': 'code_smell',
+                'severity': 'info',
+                'message': f'{len(magic_numbers)} magic numbers detected',
+                'suggestion': 'Use named constants instead of magic numbers'
+            })
+        
+        # Check for commented code
+        comment_blocks = len(re.findall(r'//.*\{|/\*.*\{.*\*/', code))
+        if comment_blocks > 0:
+            findings.append({
+                'category': 'code_smell',
+                'severity': 'info',
+                'message': 'Commented code blocks detected',
+                'suggestion': 'Remove commented code and use version control'
+            })
+        
+        if not findings:
+            findings.append({
+                'category': 'info',
+                'severity': 'info',
+                'message': 'No obvious quality issues detected in C++ code'
+            })
+        
+        return findings
+    
+    def _check_java_quality(self, code: str) -> List[Dict[str, Any]]:
+        """Check Java code quality."""
+        findings = []
+        
+        # Check for public fields
+        public_fields = re.findall(r'public\s+(?!static|class|void|abstract|final|interface)\w+\s+\w+\s*;', code)
+        if public_fields:
+            findings.append({
+                'category': 'best_practice',
+                'severity': 'warning',
+                'message': f'{len(public_fields)} public field(s) detected',
+                'suggestion': 'Use private fields with getters/setters'
+            })
+        
+        # Check for missing final on local variables
+        local_vars = len(re.findall(r'\b(?!final\s)(int|String|Object|List|Map|Set)\s+\w+\s*=', code))
+        if local_vars > 5:
+            findings.append({
+                'category': 'best_practice',
+                'severity': 'info',
+                'message': 'Consider using final for local variables that don\'t change',
+                'suggestion': 'Add final keyword to immutable local variables'
+            })
+        
+        # Check for empty catch blocks
+        if re.search(r'catch\s*\([^)]+\)\s*\{\s*\}', code):
+            findings.append({
+                'category': 'code_smell',
+                'severity': 'warning',
+                'message': 'Empty catch block detected',
+                'suggestion': 'Log the exception or handle it properly'
+            })
+        
+        # Check for very long lines
+        long_lines = [i for i, line in enumerate(code.split('\n'), 1) if len(line) > 120]
+        if len(long_lines) > 3:
+            findings.append({
+                'category': 'code_smell',
+                'severity': 'info',
+                'message': f'{len(long_lines)} lines exceed 120 characters',
+                'suggestion': 'Break long lines for better readability'
+            })
+        
+        # Check for System.out.println
+        if 'System.out.println' in code:
+            findings.append({
+                'category': 'best_practice',
+                'severity': 'info',
+                'message': 'System.out.println detected',
+                'suggestion': 'Use a proper logging framework (SLF4J, Log4j)'
+            })
+        
+        if not findings:
+            findings.append({
+                'category': 'info',
+                'severity': 'info',
+                'message': 'No obvious quality issues detected in Java code'
+            })
+        
+        return findings
+    
+    def _check_generic_quality(self, code: str, language: str) -> List[Dict[str, Any]]:
+        """Generic quality check for unsupported languages."""
+        findings = []
+        lines = code.split('\n')
+        
+        # Check line count
+        if len(lines) > 500:
+            findings.append({
+                'category': 'code_smell',
+                'severity': 'warning',
+                'message': f'File has {len(lines)} lines - consider splitting',
+                'suggestion': 'Break into multiple smaller files'
+            })
+        
+        # Check for very long lines
+        long_lines = [i for i, line in enumerate(lines, 1) if len(line) > 120]
+        if len(long_lines) > 5:
+            findings.append({
+                'category': 'code_smell',
+                'severity': 'info',
+                'message': f'{len(long_lines)} lines exceed 120 characters',
+                'suggestion': 'Break long lines for better readability'
+            })
+        
+        # Check for TODO comments
+        todos = len(re.findall(r'TODO|FIXME|HACK|XXX', code, re.IGNORECASE))
+        if todos > 0:
+            findings.append({
+                'category': 'info',
+                'severity': 'info',
+                'message': f'{todos} TODO/FIXME comments found',
+                'suggestion': 'Address outstanding TODO items'
+            })
+        
+        if not findings:
+            findings.append({
+                'category': 'info',
+                'severity': 'info',
+                'message': f'Basic quality check passed for {language}'
+            })
+        
+        return findings
+
