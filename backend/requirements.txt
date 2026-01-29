@@ -1,6 +1,29 @@
-fastapi
-uvicorn
-pymupdf
-faiss-cpu
-sentence-transformers
-python-multipart
+flask==3.0.0
+flask-cors==4.0.0
+flask-socketio==5.3.5
+python-socketio==5.10.0
+python-engineio==4.8.0
+
+# Docker integration
+docker==7.0.0
+
+# Code analysis tools
+radon==6.0.1
+bandit==1.7.5
+pylint==3.0.3
+memory-profiler==0.61.0
+astroid==3.0.2
+
+# Multi-language parsing
+tree-sitter==0.20.4
+esprima==4.0.1
+
+# Graph algorithms
+networkx==3.2.1
+
+# AI integration (optional)
+openai==1.6.1
+
+# Utilities
+python-dotenv==1.0.0
+redis==5.0.1

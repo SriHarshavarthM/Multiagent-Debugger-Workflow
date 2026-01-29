@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoSync - Multiagent Debugger Workflow Features</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e1a;
+            --bg-panel: #131825;
+            --bg-card: #1a1f35;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --text-primary: #e4e6eb;
+            --text-secondary: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--bg-panel), var(--bg-dark));
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid #2d3348;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid #2d3348;
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .capabilities {
+            list-style: none;
+        }
+
+        .capabilities li {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .capabilities li::before {
+            content: "✓";
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .viz-section {
+            margin-top: 4rem;
+            text-align: center;
+            background: var(--bg-panel);
+            padding: 3rem;
+            border-radius: 1rem;
+            border: 1px solid #2d3348;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 2rem;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-secondary);
+            padding-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AlgoSync</h1>
+        <p class="subtitle">Next-Generation Multiagent Debugger & Algorithm Visualization Platform</p>
+    </header>
+
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2rem;">7 Specialized AI Agents</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">🔍</span>
+                <h3>Error Detector</h3>
+                <p>Identifies syntax, runtime, and logic errors across 10+ programming languages.</p>
+                <ul class="capabilities">
+                    <li>Syntax validation (AST/Esprima)</li>
+                    <li>Runtime exception analysis</li>
+                    <li>Infinite loop detection</li>
+                    <li>Null reference checks</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <span class="icon">🎬</span>
+                <h3>Algorithm Visualizer</h3>
+                <p>Automatically detects algorithms and creates step-by-step animated visualizations.</p>
+                <ul class="capabilities">
+                    <li>Sorting (Bubble, Merge, Quick, etc.)</li>
+                    <li>Searching (Binary, Linear)</li>
+                    <li>Graph Traversals (BFS, DFS)</li>
+                    <li>Real-time efficiency metrics</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <span class="icon">📊</span>
+                <h3>Complexity Analyzer</h3>
+                <p>Deep mathematical analysis of code performance and structure.</p>
+                <ul class="capabilities">
+                    <li>Big O Notation (Time/Space)</li>
+                    <li>Cyclomatic Complexity</li>
+                    <li>Halstead Metrics</li>
+                    <li>Maintainability Index</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <span class="icon">🔧</span>
+                <h3>Fix Suggester</h3>
+                <p>Intelligent AI-powered code repair and optimization recommendations.</p>
+                <ul class="capabilities">
+                    <li>Automated bug fixes</li>
+                    <li>Side-by-side Diff Viewer</li>
+                    <li>Performance optimizations</li>
+                    <li>Refactoring tips</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <span class="icon">🔒</span>
+                <h3>Security Analyzer</h3>
+                <p>Scans for vulnerabilities and security risks using industry standards.</p>
+                <ul class="capabilities">
+                    <li>OWASP Top 10 Checks</li>
+                    <li>SQL/Command Injection</li>
+                    <li>XSS Detection</li>
+                    <li>Hardcoded Secret Audits</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <span class="icon">💾</span>
+                <h3>Memory Profiler</h3>
+                <p>Analyzes memory usage patterns to prevent leaks and bloat.</p>
+                <ul class="capabilities">
+                    <li>Memory Leak Detection</li>
+                    <li>Inefficient Allocation spotting</li>
+                    <li>Resource Management checks</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <span class="icon">✨</span>
+                <h3>Quality Checker</h3>
+                <p>Enforces code standards, readability, and best practices.</p>
+                <ul class="capabilities">
+                    <li>Code Smell Detection</li>
+                    <li>PEP8 / Style Guide Compliance</li>
+                    <li>Documentation Coverage</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="viz-section">
+            <h2>🚀 Ready to Run?</h2>
+            <p style="margin-top: 1rem;">This project includes a fully setup React Frontend and Flask Backend.</p>
+            <p>To run locally, simply execute the included <code>run_locally.bat</code> file!</p>
+            <a href="http://localhost:5173" class="btn">Launch Dashboard</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 AlgoSync Multiagent Debugger. Built with React, Flask, and AI.</p>
+    </footer>
+</body>
+</html>

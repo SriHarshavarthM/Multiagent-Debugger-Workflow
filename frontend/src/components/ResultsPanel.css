@@ -1,0 +1,268 @@
+.results-panel {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.results-panel.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--accent-error);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+.results-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.results-title .icon {
+    font-size: 1.75rem;
+}
+
+/* Summary Cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card.severity-error {
+    border-color: var(--accent-error);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.summary-card.severity-warning {
+    border-color: var(--accent-warning);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.summary-card.severity-success {
+    border-color: var(--accent-success);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+.card-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.severity-error .card-value {
+    background: linear-gradient(135deg, var(--accent-error), #dc2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.severity-warning .card-value {
+    background: linear-gradient(135deg, var(--accent-warning), #ea580c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.severity-success .card-value {
+    background: linear-gradient(135deg, var(--accent-success), #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Complexity Overview */
+.complexity-overview {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.complexity-overview h4 {
+    margin-bottom: 1rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-dark);
+    border-radius: 0.5rem;
+}
+
+.metric-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.metric-value {
+    font-weight: 600;
+    color: var(--accent-primary);
+    font-size: 1.125rem;
+}
+
+/* Agent Findings */
+.all-findings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.agent-findings {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.agent-findings-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+}
+
+.agent-findings-title .icon {
+    font-size: 1.5rem;
+}
+
+.findings-count {
+    margin-left: auto;
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.finding-item {
+    background: var(--bg-dark);
+    border-left: 3px solid var(--accent-primary);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.finding-item.severity-error,
+.finding-item.severity-critical {
+    border-left-color: var(--accent-error);
+}
+
+.finding-item.severity-warning {
+    border-left-color: var(--accent-warning);
+}
+
+.finding-item.severity-info {
+    border-left-color: var(--accent-primary);
+}
+
+.finding-header {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.finding-severity {
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.finding-item.severity-error .finding-severity,
+.finding-item.severity-critical .finding-severity {
+    background: var(--accent-error);
+}
+
+.finding-item.severity-warning .finding-severity {
+    background: var(--accent-warning);
+}
+
+.finding-line {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.finding-message {
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.finding-suggestion {
+    color: var(--accent-success);
+    font-size: 0.875rem;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+.code-example {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.875rem;
+    color: var(--accent-primary);
+}
+
+.more-findings {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    padding: 0.5rem;
+}

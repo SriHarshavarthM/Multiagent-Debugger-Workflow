@@ -1,0 +1,107 @@
+.workflow-dashboard {
+    margin-bottom: 2rem;
+}
+
+.workflow-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.workflow-title .icon {
+    font-size: 1.5rem;
+}
+
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.agent-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-card.status-running {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px var(--glow);
+    animation: pulse 2s infinite;
+}
+
+.agent-card.status-completed {
+    border-color: var(--accent-success);
+}
+
+.agent-card.status-error {
+    border-color: var(--accent-error);
+}
+
+.agent-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.agent-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.agent-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.agent-status {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--bg-dark);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    animation: progress 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px var(--glow);
+    }
+
+    50% {
+        box-shadow: 0 0 25px var(--glow);
+    }
+}
+
+@keyframes progress {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
